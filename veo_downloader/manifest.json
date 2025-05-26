@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "VEO 3D Downloader",
-  "version": "0.1.0",
-  "description": "Injects a \"Download 3D\" button on VEO match pages and downloads the 3D video.",
+  "version": "0.1.1",
+  "description": "Adds a “Download 3D Game Video” item to VEO match pages and downloads the 3D panorama video.",
   "permissions": ["scripting", "activeTab", "downloads"],
   "background": {
     "service_worker": "background.js"
@@ -10,8 +10,14 @@
   "content_scripts": [
     {
       "matches": ["https://app.veo.co/matches/*"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["images/icon.png"],
+      "matches": ["<all_urls>"]
     }
   ]
 }
-
