@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "VEO 3D Downloader",
+  "version": "0.1.0",
+  "description": "Injects a \"Download 3D\" button on VEO match pages and downloads the 3D video.",
+  "permissions": ["scripting", "activeTab", "downloads"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://app.veo.co/matches/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
+
