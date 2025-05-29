@@ -1,14 +1,17 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'downloadVideo' && message.url) {
+// background.js
+chrome.runtime.onMessage.addListener((msg, sender) => {
+  if (msg.action === 'downloadFile' && msg.url && msg.filename) {
+    console.log('⬇️ Starting download:', msg.filename, msg.url);
+
     chrome.downloads.download({
-      url: message.url,
-      filename: message.filename,
-      saveAs: false
+      url:            msg.url,
+      filename:       msg.filename,
+      conflictAction: 'uniquify'
     }, downloadId => {
       if (chrome.runtime.lastError) {
-        console.error('❌ Download failed:', chrome.runtime.lastError);
+        console.error('❌ Download failed:', chrome.runtime.lastError.message);
       } else {
-        console.log('✅ Download initiated, id:', downloadId);
+        console.log('✅ Download started, id:', downloadId);
       }
     });
   }
