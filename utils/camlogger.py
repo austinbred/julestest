@@ -27,12 +27,22 @@ def log_intrinsics(name: str, K: np.ndarray) -> None:
     c21 = f"0.000000" if abs(v21) < 1e-6 else f"error={v21:0.6f}"
     c22 = f"1.000000" if abs(v22 - 1.0) < 1e-6 else f"error={v22:0.6f}"
 
-    # Format each row with six decimal places or error tags
-    row0 = f"[ fx={fx:0.6f}, s={s:0.6f}, cx={cx:0.6f} ]"
-    row1 = f"[ {c10}, fy={fy:0.6f}, cy={cy:0.6f} ]"
-    row2 = f"[ {c20}, {c21}, {c22} ]"
+            # Prepare labeled fields
+    col00 = f"fx={fx:0.6f}"; col01 = f"s={s:0.6f}"; col02 = f"cx={cx:0.6f}"
+    col10 = c10;              col11 = f"fy={fy:0.6f}"; col12 = f"cy={cy:0.6f}"
+    col20 = c20;              col21 = c21;              col22 = c22
 
-    # Ensure name is not empty
+    # Pad each column entry to 12 characters, right-aligned
+    col00 = f"{col00:>12}"; col01 = f"{col01:>12}"; col02 = f"{col02:>12}"
+    col10 = f"{col10:>12}"; col11 = f"{col11:>12}"; col12 = f"{col12:>12}"
+    col20 = f"{col20:>12}"; col21 = f"{col21:>12}"; col22 = f"{col22:>12}"
+
+    # Construct rows with aligned columns
+    row0 = f"[ {col00}, {col01}, {col02} ]"
+    row1 = f"[ {col10}, {col11}, {col12} ]"
+    row2 = f"[ {col20}, {col21}, {col22} ]"
+
+    # Ensure name is not empty is not empty is not empty
     name_str = name if name else "Camera"
         # Print a blank line for separation
     print()
