@@ -12,6 +12,7 @@ import numpy as np
 from pathlib import Path
 from PIL import Image
 import math
+from camlogger import log_intrinsics
 
 
 def compute_homography(K_src: np.ndarray,
@@ -89,6 +90,8 @@ def warp_to_rig(undistorted,
         src_bgr = cv2.cvtColor(np.array(img_pil), cv2.COLOR_RGB2BGR)
     else:
         src_bgr = undistorted
+
+    log_intrinsics('RigCam', K_rig)
 
     # Compute homography including translation
     H = compute_homography(K_src, extrinsic, K_rig, Z_ref)
