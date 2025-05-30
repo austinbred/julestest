@@ -1,60 +1,49 @@
-# File: camlogger.py
 import numpy as np
 
 
 def log_intrinsics(name: str, K: np.ndarray) -> None:
     """
-    Logs the intrinsic matrix in human-friendly form:
+    Logs the intrinsic matrix with fixed six-decimal formatting:
       [ fx=<fx>,  s=<skew>,   cx=<cx> ]
       [ <c10>,  fy=<fy>,  cy=<cy> ]
       [ <c20>,   <c21>,   <c22> ]
 
-    Cells marked "error=<value>" indicate deviations from expected zero or one.
-
-    Parameters:
-    - name: label for the matrix (e.g., 'LeftCam')
-    - K: 3x3 intrinsic matrix
+    All values are shown with six decimal places for clarity.
     """
     K = np.array(K, dtype=float)
-    # Extract standard intrinsics
     fx, s, cx = K[0,0], K[0,1], K[0,2]
     v10, fy, cy = K[1,0], K[1,1], K[1,2]
     v20, v21, v22 = K[2,0], K[2,1], K[2,2]
 
-    # Determine error flags for predefined zeros/ones
-    c10 = f"0.000000" if abs(v10) < 1e-6 else f"error={v10:0.6f}"
-    c20 = f"0.000000" if abs(v20) < 1e-6 else f"error={v20:0.6f}"
-    c21 = f"0.000000" if abs(v21) < 1e-6 else f"error={v21:0.6f}"
-    c22 = f"1.000000" if abs(v22 - 1.0) < 1e-6 else f"error={v22:0.6f}"
-
-            # Prepare labeled fields
-    col00 = f"fx={fx:0.6f}"; col01 = f"s={s:0.6f}"; col02 = f"cx={cx:0.6f}"
-    col10 = c10;              col11 = f"fy={fy:0.6f}"; col12 = f"cy={cy:0.6f}"
-    col20 = c20;              col21 = c21;              col22 = c22
-
-    # Pad each column entry to 12 characters, right-aligned
-    col00 = f"{col00:>12}"; col01 = f"{col01:>12}"; col02 = f"{col02:>12}"
-    col10 = f"{col10:>12}"; col11 = f"{col11:>12}"; col12 = f"{col12:>12}"
-    col20 = f"{col20:>12}"; col21 = f"{col21:>12}"; col22 = f"{col22:>12}"
-
-    # Construct rows with aligned columns
-    row0 = f"[ {col00}, {col01}, {col02} ]"
-    row1 = f"[ {col10}, {col11}, {col12} ]"
-    row2 = f"[ {col20}, {col21}, {col22} ]"
-
-    # Ensure name is not empty is not empty is not empty
-    name_str = name if name else "Camera"
-        # Print a blank line for separation
+    # Print aligned rows with six decimal places
     print()
-    # Print the matrix
-    print(f"{name_str} Intrinsics:")
-    print(row0)
-    print(row1)
-    print(row2)
+    print(f"{name} Intrinsics:")
+    print(f"[ fx={ fx:12.6f},   s={  s:12.6f},  cx={cx:12.6f} ]")
+    print(f"[    {v10:12.6f},  fy={ fy:12.6f},     {cy:12.6f} ]")
+    print(f"[    {v20:12.6f},     {v21:12.6f},     {v22:12.6f} ]")
 
-# Example usage in step04_rigwarp.py:
-# import camlogger
-# camlogger.log_intrinsics('LeftCam', K_src) in step04_rigwarp.py:
-# import camlogger
-# camlogger.log_intrinsics('LeftCam', K_src)
+
+def log_extrinsics(name: str, E: np.ndarray) -> None:
+    """
+    Logs the extrinsic matrix with rotation and translation labels in six-decimal format:
+      [ r00=<r00>, r01=<r01>, r02=<r02> ]
+      [ r10=<r10>, r11=<r11>, r12=<r12> ]
+      [ r20=<r20>, r21=<r21>, r22=<r22> ]
+      Translation: [ tx=<tx>, ty=<ty>, tz=<tz> ]
+    """
+    E = np.array(E, dtype=float)
+    R = E[:4, :4]
+    t = E[:3, 3]
+
+    # Print rotation rows
+    print()
+    print(f"{name} Extrinsics:")
+    print(f"[ r00={R[0,0]:12.6f}, r01={R[0,1]:12.6f}, r02={R[0,2]:12.6f}, tx={R[0,3]:12.6f} ]")
+    print(f"[ r10={R[1,0]:12.6f}, r11={R[1,1]:12.6f}, r12={R[1,2]:12.6f}, ty={R[1,3]:12.6f} ]")
+    print(f"[ r20={R[2,0]:12.6f}, r21={R[2,1]:12.6f}, r22={R[2,2]:12.6f}, tz={R[2,3]:12.6f} ]")
+    print(f"[ 0={R[3,0]:12.6f}, 0={R[3,1]:12.6f}, 0={R[3,2]:12.6f}, 1={R[3,3]:12.6f} ]")
+
+    # Print translation
+    tx, ty, tz = t
+    print(f"Translation: [ tx={tx:0.6f}, ty={ty:0.6f}, tz={tz:0.6f} ]")
 

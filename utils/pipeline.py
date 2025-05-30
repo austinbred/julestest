@@ -45,7 +45,7 @@ def main():
     base_workdir.mkdir(parents=True, exist_ok=True)
 
     # Reference depth (e.g., field width)
-    Z_ref = float(data.get('field_width', 1.0))
+    Z_ref = float(data['alignment'].get('field_width', 1.0))
     print(f"Using reference plane depth Z_ref = {Z_ref:.5f}")
 
     # Field length for warp (optional)
