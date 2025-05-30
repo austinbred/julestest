@@ -74,7 +74,7 @@ def main():
         frame_dir.mkdir(parents=True, exist_ok=True)
 
         # Save original frame PNG
-        frame_path = frame_dir / f"frame{idx:06d}.png"
+        frame_path = frame_dir / f"frame{idx:06d}_00.png"
         cv2.imwrite(str(frame_path), frame)
 
         # Step 01: split
@@ -85,8 +85,10 @@ def main():
         r2 = step02_expand.expand_image(r1, frame_dir)
 
         # Step 03: undistort fisheye
-        l3 = step03_undistort.undistort_fisheye(l2, Kl, Dl, frame_dir)
-        r3 = step03_undistort.undistort_fisheye(r2, Kr, Dr, frame_dir)
+        # Left camera undistortion
+        l3 = step03_undistort.undistort_fisheye( l2, Kl, Dl, frame_dir, idx, 'left')
+        # Right camera undistortion
+        r3 = step03_undistort.undistort_fisheye( r2, Kr, Dr, frame_dir, idx, 'right')
 
         # Step 04: warp each lens into rig frame
         l4 = step04_rigwarp.warp_to_rig(l3, Kl, lens_left2camera,  np.eye(3), Z_ref, frame_dir, idx, 'left')
