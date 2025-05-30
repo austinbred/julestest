@@ -1,5 +1,19 @@
 import numpy as np
 
+def log_distortion(name: str, D: np.ndarray) -> None:
+    """
+    Logs the distortion matrix with :
+      [ d00=<d00>, d01=<d01>, d02=<d02>, d03=<d03> ]
+    """
+
+    D = np.array(D, dtype=float)
+    d = D.flatten()
+
+    # Print rotation rows
+    print()
+    print(f"{name} Distortion:")
+    print(f"[ d00={d[0]:12.6f}, d01={d[1]:12.6f}, d02={d[2]:12.6f}, d03={d[3]:12.6f}]")
+
 
 def log_intrinsics(name: str, K: np.ndarray) -> None:
     """
