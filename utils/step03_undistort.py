@@ -51,7 +51,7 @@ def undistort_fisheye(input_path: Path,
 
     # Apply original padded-region mask (central 80% per tuning)
     pad_h = int(0.22 * h)
-    pad_w = int(0.20 * w)
+    pad_w = int(0.16 * w)
     mask = np.zeros((h, w), dtype=np.uint8)
     mask[pad_h:h-pad_h, pad_w:w-pad_w] = 255
     mask_path = workdir / f"frame{idx:06d}_03_{side}_mask.png"

@@ -18,6 +18,7 @@ CONVERT_FROM_THREEJS = True     # If True, convert extrinsics from Three.js axes
 ROTATION_SCALE = 1.0            # Scale applied to extrinsic rotation angles (1.0 = no scaling)
 INVERT_EXTRINSIC = False        # If True, invert the extrinsic matrix
 REMOVE_ROTATION = False         # If True, ignore rotation (pure translation)
+NP_EYE_FOR_DEBUG = False        # If True, use np.eye() for debugging instead of actual matrices
 
 
 def compute_homography(K_src: np.ndarray,
@@ -109,16 +110,19 @@ def warp_to_rig(undistorted,
     else:
         src_bgr = undistorted
 
-    #remove extrinsics rotation
-    #extrinsic[0:3,0:3] = 0.0
-    #extrinsic[0:3,0:3] = np.eye(3)
-    #K_rig = np.eye(3)
-    #K_src = np.eye(3)
-    #Z_ref = 0.00039
-    
-    camlogger.log_extrinsics("np.eye'd extrinsic",extrinsic)
-    camlogger.log_intrinsics("np.eye'd K_src",K_src)
-    camlogger.log_intrinsics("Znp.eye'd K_rig",K_rig)
+    if NP_EYE_FOR_DEBUG:
+        # For debugging, use identity matrices
+        print("04 - Using np.eye() for extrinsic, K_src, K_rig, Z_ref for debugging.")
+        #remove extrinsics rotation
+        #extrinsic[0:3,0:3] = 0.0
+        #extrinsic[0:3,0:3] = np.eye(3)
+        extrinsic = np.eye(4)
+        K_src = np.eye(3)
+        K_rig = np.eye(3)
+        Z_ref = 0.00039
+        camlogger.log_extrinsics("np.eye'd extrinsic",extrinsic)
+        camlogger.log_intrinsics("np.eye'd K_src",K_src)
+        camlogger.log_intrinsics("Znp.eye'd K_rig",K_rig)
    
     # Log extrinsics for this side
     print(f"04 - Z_ref = {Z_ref:0.6f}")
