@@ -13,10 +13,11 @@ from PIL import Image
 import camlogger
 
 # Configuration flags
-COL_MAJOR = False        # If True, treat extrinsic as column-major
-THREEJS_AXES = True      # If True, convert OpenCV axes to Three.js axes
-ROTATION_SCALE = 1.0     # Scale applied to extrinsic rotation angles (1.0 = no scaling)
-INVERT_EXTRINSIC = False
+COL_MAJOR = False               # If True, treat extrinsic as column-major
+CONVERT_FROM_THREEJS = True     # If True, convert extrinsics from Three.js axes to OpenCV axes
+ROTATION_SCALE = 1.0            # Scale applied to extrinsic rotation angles (1.0 = no scaling)
+INVERT_EXTRINSIC = False        # If True, invert the extrinsic matrix
+REMOVE_ROTATION = False         # If True, ignore rotation (pure translation)
 
 
 def compute_homography(K_src: np.ndarray,
@@ -89,7 +90,7 @@ def warp_to_rig(undistorted,
         camlogger.log_extrinsics("Extrinsic transposed to column-major",extrinsic)
 
     # Handle Three.js axis conversion if configured
-    if THREEJS_AXES:
+    if CONVERT_FROM_THREEJS:
         S = np.diag([1.0, -1.0, -1.0])
         R_orig = extrinsic[:3, :3]
         t_orig = extrinsic[:3, 3]
@@ -98,8 +99,8 @@ def warp_to_rig(undistorted,
         extrinsic = np.eye(4)
         extrinsic[:3, :3] = R_conv
         extrinsic[:3, 3] = t_conv
-        print(f"04 - Converted axes from Three.js to OpenCV on {side} lens.")
-        camlogger.log_extrinsics("Converted from Three.js",extrinsic)
+        print(f"04 - Converted extrinsic axes from Three.js to OpenCV on {side} lens.")
+        camlogger.log_extrinsics("Converted from Three.js", extrinsic)
 
     # Load image if a file path is provided
     if isinstance(undistorted, (str, Path)):
@@ -136,18 +137,18 @@ def warp_to_rig(undistorted,
     #print(f"04 - Warping {side} image of size {w}x{h}.")
     #rig_bgr = cv2.warpPerspective(src_bgr, H, (w, h))
 
-        # Warp onto 2× canvas, aligning top and side per lens
+            # Warp onto 2× canvas, aligning top and side per lens
     h, w = src_bgr.shape[:2]
-    canvas_w, canvas_h = w * 2, h * 2
-    # Compute translation to place image at left or right half, top aligned
+    canvas_w, canvas_h = w * 3, h * 3
+    # Compute translation to place image on left or right half (top-aligned)
     if side.lower() == 'left':
         tx, ty = 0, 0
     else:  # right lens
-        tx, ty = w, 0
-    T_center = np.array([[1, 0, -tx], [0, 1, -ty], [0, 0, 1]], dtype=float)
-    # Pre-apply inverse translation so warp lands correctly
-    T_inv = np.linalg.inv(T_center)
-    H_big = H @ T_inv
+        tx, ty = 2*w, 0
+    # Build translation matrix to shift output
+    T_center = np.array([[1, 0, tx], [0, 1, ty], [0, 0, 1]], dtype=float)
+    # Prepend translation so homography maps into larger canvas
+    H_big = T_center @ H
     print(f"04 - Warping {side} onto canvas {canvas_w}x{canvas_h} at offset ({tx},{ty}).")
     rig_bgr = cv2.warpPerspective(src_bgr, H_big, (canvas_w, canvas_h))
 
@@ -159,4 +160,6 @@ def warp_to_rig(undistorted,
     print(f"04 - Saved {side} rig-space image: {out_path}")
 
     return rig_bgr
+
+
 
