@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 
 def log_distortion(name: str, D: np.ndarray) -> None:
     """
@@ -60,4 +61,15 @@ def log_extrinsics(name: str, E: np.ndarray) -> None:
     # Print translation
     tx, ty, tz = t
     print(f"Translation: [ tx={tx:0.6f}, ty={ty:0.6f}, tz={tz:0.6f} ]")
+
+    # Extract current 3x3 rotation block
+    R1 = R[:3, :3].copy()
+    # Decompose R into Euler angles via RQ decomposition (angles in degrees)
+    angles, _, _, _, _, _ = cv2.RQDecomp3x3(R1)
+    rx, ry, rz = angles
+    # Flip the sign of the roll (Z-axis) and yaw (Y-axis)
+    rz = -rz
+    ry = -ry
+    rx = rx
+    print(f"04 - Euler values of rotation matrix: pitch={rx:.2f}, yaw={ry:.2f}, roll={rz:.2f}")
 
