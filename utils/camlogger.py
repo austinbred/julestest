@@ -1,5 +1,13 @@
 import numpy as np
 import cv2
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s'  # Simple format to match previous print output
+)
+logger = logging.getLogger(__name__)
 
 def log_distortion(name: str, D: np.ndarray) -> None:
     """
@@ -10,10 +18,10 @@ def log_distortion(name: str, D: np.ndarray) -> None:
     D = np.array(D, dtype=float)
     d = D.flatten()
 
-    # Print rotation rows
-    print()
-    print(f"{name} Distortion:")
-    print(f"[ d00={d[0]:12.6f}, d01={d[1]:12.6f}, d02={d[2]:12.6f}, d03={d[3]:12.6f}]")
+    # Log rotation rows
+    logger.info("")
+    logger.info(f"{name} Distortion:")
+    logger.info(f"[ d00={d[0]:12.6f}, d01={d[1]:12.6f}, d02={d[2]:12.6f}, d03={d[3]:12.6f}]")
 
 
 def log_intrinsics(name: str, K: np.ndarray) -> None:
@@ -30,12 +38,12 @@ def log_intrinsics(name: str, K: np.ndarray) -> None:
     v10, fy, cy = K[1,0], K[1,1], K[1,2]
     v20, v21, v22 = K[2,0], K[2,1], K[2,2]
 
-    # Print aligned rows with six decimal places
-    print()
-    print(f"{name} Intrinsics:")
-    print(f"[ fx={ fx:12.6f},   s={  s:12.6f},  cx={cx:12.6f} ]")
-    print(f"[    {v10:12.6f},  fy={ fy:12.6f},     {cy:12.6f} ]")
-    print(f"[    {v20:12.6f},     {v21:12.6f},     {v22:12.6f} ]")
+    # Log aligned rows with six decimal places
+    logger.info("")
+    logger.info(f"{name} Intrinsics:")
+    logger.info(f"[ fx={ fx:12.6f},   s={  s:12.6f},  cx={cx:12.6f} ]")
+    logger.info(f"[    {v10:12.6f},  fy={ fy:12.6f},     {cy:12.6f} ]")
+    logger.info(f"[    {v20:12.6f},     {v21:12.6f},     {v22:12.6f} ]")
 
 
 def log_extrinsics(name: str, E: np.ndarray) -> None:
@@ -50,17 +58,17 @@ def log_extrinsics(name: str, E: np.ndarray) -> None:
     R = E[:4, :4]
     t = E[:3, 3]
 
-    # Print rotation rows
-    print()
-    print(f"{name} Extrinsics:")
-    print(f"[ r00={R[0,0]:12.6f}, r01={R[0,1]:12.6f}, r02={R[0,2]:12.6f}, tx={R[0,3]:12.6f} ]")
-    print(f"[ r10={R[1,0]:12.6f}, r11={R[1,1]:12.6f}, r12={R[1,2]:12.6f}, ty={R[1,3]:12.6f} ]")
-    print(f"[ r20={R[2,0]:12.6f}, r21={R[2,1]:12.6f}, r22={R[2,2]:12.6f}, tz={R[2,3]:12.6f} ]")
-    print(f"[ 0={R[3,0]:12.6f}, 0={R[3,1]:12.6f}, 0={R[3,2]:12.6f}, 1={R[3,3]:12.6f} ]")
+    # Log rotation rows
+    logger.info("")
+    logger.info(f"{name} Extrinsics:")
+    logger.info(f"[ r00={R[0,0]:12.6f}, r01={R[0,1]:12.6f}, r02={R[0,2]:12.6f}, tx={R[0,3]:12.6f} ]")
+    logger.info(f"[ r10={R[1,0]:12.6f}, r11={R[1,1]:12.6f}, r12={R[1,2]:12.6f}, ty={R[1,3]:12.6f} ]")
+    logger.info(f"[ r20={R[2,0]:12.6f}, r21={R[2,1]:12.6f}, r22={R[2,2]:12.6f}, tz={R[2,3]:12.6f} ]")
+    logger.info(f"[ 0={R[3,0]:12.6f}, 0={R[3,1]:12.6f}, 0={R[3,2]:12.6f}, 1={R[3,3]:12.6f} ]")
 
-    # Print translation
+    # Log translation
     tx, ty, tz = t
-    print(f"Translation: [ tx={tx:0.6f}, ty={ty:0.6f}, tz={tz:0.6f} ]")
+    logger.info(f"Translation: [ tx={tx:0.6f}, ty={ty:0.6f}, tz={tz:0.6f} ]")
 
     # Extract current 3x3 rotation block
     R1 = R[:3, :3].copy()
@@ -71,5 +79,5 @@ def log_extrinsics(name: str, E: np.ndarray) -> None:
     rz = -rz
     ry = -ry
     rx = rx
-    print(f"04 - Euler values of rotation matrix: pitch={rx:.2f}, yaw={ry:.2f}, roll={rz:.2f}")
+    logger.info(f"04 - Euler values of rotation matrix: pitch={rx:.2f}, yaw={ry:.2f}, roll={rz:.2f}")
 
