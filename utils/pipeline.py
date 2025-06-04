@@ -22,10 +22,10 @@ import step01_split
 import step02_expand
 import step03_undistort
 import step04_rigwarp
-import step05_canvas
+import step05_stitch
 import step06_warp
 import step07_presentation
-import calibration
+import load_calibration
 
 
 def main():
@@ -36,8 +36,8 @@ def main():
     parser.add_argument('--workdir',     required=True, type=Path)
     args = parser.parse_args()
 
-    # Load calibration using calibration.py utility
-    data, Kl, Dl, Kr, Dr, cam2pres = calibration.load_calibration(args.calibration)
+    # Load calibration using load_calibration.py utility
+    data, Kl, Dl, Kr, Dr, cam2pres = load_calibration.load_calibration(args.calibration)
 
     # Prepare base working directory with timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -95,17 +95,17 @@ def main():
         r4 = step04_rigwarp.warp_to_rig(r3, Kr, lens_right2camera, np.eye(3), Z_ref, frame_dir, idx, 'right')
 
         # Step 05: stitch rig-space images
-        canvas = step05_canvas.compose_canvas(l4, r4, 0, frame_dir, idx)
+        canvas = step05_stitch.compose_stitch(l4, r4, frame_dir, idx)
 
         # Step 06: bird's-eye (optional)
-        be = step06_warp.warp_birdseye(canvas, data, frame_dir, idx)
+        #be = step06_warp.warp_birdseye(canvas, data, frame_dir, idx)
 
         # Step 07: presentation view (using camera2presentation matrix)
-        pres = step07_presentation.apply_presentation(be, data, frame_dir, idx)
+        #pres = step07_presentation.apply_presentation(be, data, frame_dir, idx)
 
         # Write to output video
-        out_frame = cv2.cvtColor(np.array(pres), cv2.COLOR_RGB2BGR)
-        out.write(out_frame)
+        #out_frame = cv2.cvtColor(np.array(pres), cv2.COLOR_RGB2BGR)
+        #out.write(out_frame)
 
         idx += 1
 
