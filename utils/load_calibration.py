@@ -1,6 +1,6 @@
-# calibration.py
+# load_calibration.py
 """
-Module: calibration.py
+Module: load_calibration.py
 
 Handles loading of calibration JSON, parsing intrinsics, distortion,
  and optional presentation-space extrinsics, with detailed logging.
@@ -27,7 +27,7 @@ def load_calibration(path: Path):
         Dr (np.ndarray): 4-element right fisheye distortion vector.
         cam2pres (np.ndarray or None): 4×4 presentation-space transform.
     """
-    print("=== calibration.py: Loading calibration ===")
+    print("=== load_calibration.py: Loading calibration ===")
     data = json.load(path.open('r', encoding='utf-8'))
     align = data['alignment']
 
@@ -74,6 +74,5 @@ def load_calibration(path: Path):
     else:
         print("No camera2presentation matrix found in JSON.")
 
-    print("=== calibration.py loaded successfully ===")
-    return data, Kl, Dl, Kr, Dr, cam2pres
-
+    print("=== load_calibration.py loaded successfully ===")
+    return data, Kl, Dl, Kr, Dr, cam2pres 
