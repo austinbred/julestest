@@ -25,7 +25,9 @@ def flip_extrinsic_signs(extrinsic: np.ndarray) -> np.ndarray:
     # Flip the sign of the roll (Z-axis) and yaw (Y-axis)
     rz = -rz
     ry = -ry
-    rx = rx
+    rx = 0
+    print(f"rx= {rx}, ry= {ry}, rz= {rz}")
+   
     print("04 - Flipping extrinsic signs")
 
     # Helper functions to build rotation matrices
